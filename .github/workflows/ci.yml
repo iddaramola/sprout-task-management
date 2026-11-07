@@ -1,0 +1,69 @@
+name: Task Management CI
+
+on:
+  push:
+    branches:
+      - main
+      - master
+  pull_request:
+    branches:
+      - main
+      - master
+
+jobs:
+  backend-tests:
+    name: Backend Integration Tests
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_USER: task_app
+          POSTGRES_PASSWORD: test_password
+          POSTGRES_DB: task_management_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U task_app -d task_management_test"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    defaults:
+      run:
+        working-directory: backend
+
+    env:
+      DB_HOST: localhost
+      DB_PORT: 5432
+      DB_NAME: task_management_test
+      DB_USER: task_app
+      DB_PASSWORD: test_password
+      FRONTEND_URL: http://localhost:5173
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: backend/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Apply database schema
+        run: |
+          PGPASSWORD="$DB_PASSWORD" psql \
+            -h "$DB_HOST" \
+            -p "$DB_PORT" \
+            -U "$DB_USER" \
+            -d "$DB_NAME" \
+            -f ../database/schema.sql
+
+      - name: Run backend tests
+        run: npm test
