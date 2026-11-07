@@ -632,10 +632,3 @@ The assessment scope does not require authentication, microservices, message bro
 
 ---
 
-## Repository
-
-GitHub: https://github.com/iddaramola/sprout-task-management
-
-## License
-
-This project was developed as part of a Full-Stack Developer Practical Assessment.
