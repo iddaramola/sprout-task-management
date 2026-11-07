@@ -7,6 +7,7 @@ import {
 
 import TaskList from "./components/TaskList";
 import "./App.css";
+import TaskForm from "./components/TaskForm";
 
 function App() {
   const [tasks, setTasks] = useState([]);
@@ -60,6 +61,19 @@ function App() {
     }
   }
 
+  function handleTaskCreated(newTask) {
+  setTasks((currentTasks) => {
+    if (
+      statusFilter &&
+      newTask.status !== statusFilter
+    ) {
+      return currentTasks;
+    }
+
+    return [newTask, ...currentTasks];
+  });
+}
+
   return (
     <main className="container">
       <header className="page-header">
@@ -68,6 +82,8 @@ function App() {
           <p>Organize and track your work.</p>
         </div>
       </header>
+
+      <TaskForm onTaskCreated={handleTaskCreated} />
 
       <section className="tasks-section">
         <div className="section-header">
