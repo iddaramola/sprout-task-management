@@ -9,14 +9,16 @@ export function notFound(req, res, next) {
 }
 
 export function errorHandler(error, req, res, next) {
-  if (statusCode >= 500) {
-  console.error(error);
-  }
+  
 
   const statusCode =
     error.statusCode ||
     error.status ||
     500;
+
+    if (statusCode >= 500) {
+  console.error(error);
+  }
 
   const message =
     statusCode >= 500
